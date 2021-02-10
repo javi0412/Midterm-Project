@@ -12,19 +12,22 @@ import java.util.Objects;
 @DynamicUpdate
 public class ThirdParty extends User{
     @NotNull
-    private String hashedKey;
+    private Integer hashedKey;
 
-    public ThirdParty(@NotNull(message = "Name can not be null") String name, @NotNull String hashedKey) {
+    public ThirdParty(@NotNull(message = "Name can not be null") String name, @NotNull Integer hashedKey) {
         super(name);
         this.hashedKey = hashedKey;
     }
 
     public ThirdParty() {
     }
+    
 
+    public Integer getHashedKey() {
+        return hashedKey;
+    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashedKey);
+    public void setHashedKey(Integer hashedKey) {
+        this.hashedKey = hashedKey;
     }
 }
