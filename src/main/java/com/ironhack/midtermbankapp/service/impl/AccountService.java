@@ -8,11 +8,13 @@ import com.ironhack.midtermbankapp.repository.accounts.CheckingRepository;
 import com.ironhack.midtermbankapp.repository.accounts.SavingsRepository;
 import com.ironhack.midtermbankapp.repository.accounts.StudentCheckingRepository;
 import com.ironhack.midtermbankapp.service.interfaces.IAccountService;
+import com.ironhack.midtermbankapp.utils.Money;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,7 +73,18 @@ public class AccountService implements IAccountService {
         }else{
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found");
         }
-
-
     }
+
+    @Override
+    public void updateBalance(long id, Money balance) {
+        Optional<Account> account = accountRepository.findById(id);
+        if(account.isPresent()){
+            account.get().setId(id);
+            account.get().setBalance(balance);
+            accountRepository.save(account.get());
+        } else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found");
+        }
+    }
+
 }
