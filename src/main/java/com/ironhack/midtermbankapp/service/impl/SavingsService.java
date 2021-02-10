@@ -44,16 +44,6 @@ public class SavingsService implements ISavingsService {
     @Override
     public Savings create (SavingsDTO savingsDTO){
 
-        if(savingsDTO.getInterestRate()== null){
-            savingsDTO.setInterestRate(BigDecimal.valueOf(0.0025));
-        } else{
-            savingsDTO.setInterestRate(savingsDTO.getInterestRate());
-        }
-        if(savingsDTO.getMinimumBalance() == null){
-            savingsDTO.setMinimumBalance(BigDecimal.valueOf(1000));
-        } else{
-            savingsDTO.setMinimumBalance(savingsDTO.getMinimumBalance());
-        }
         Savings savings = new Savings();
         savings.setInterestRate(savingsDTO.getInterestRate());
         savings.setMinimumBalance(savingsDTO.getMinimumBalance());
@@ -62,7 +52,11 @@ public class SavingsService implements ISavingsService {
         savings.setBalance(savingsDTO.getBalance());
         savings.setCreationDate(LocalDate.now());
         savings.setPrimaryOwner(accountHolderRepository.findById(savingsDTO.getPrimaryOwner()).get());
-        savings.setSecondaryOwner(accountHolderRepository.findById(savingsDTO.getSecondaryOwner()).get());
+        if(accountHolderRepository.findById(savingsDTO.getSecondaryOwner()).isEmpty()){
+
+        } else{
+            savings.setSecondaryOwner(accountHolderRepository.findById(savingsDTO.getSecondaryOwner()).get());
+        }
         accountRepository.save(savings);
         return savingsRepository.save(savings);    }
 

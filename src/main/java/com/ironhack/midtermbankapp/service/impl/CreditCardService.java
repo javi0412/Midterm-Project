@@ -46,7 +46,11 @@ public class CreditCardService implements ICreditCardService {
         creditCard.setCreditLimit(creditCardDTO.getCreditLimit());
         creditCard.setBalance(creditCardDTO.getBalance());
         creditCard.setPrimaryOwner(accountHolderRepository.findById(creditCardDTO.getPrimaryOwner()).get());
-        creditCard.setSecondaryOwner(accountHolderRepository.findById(creditCardDTO.getSecondaryOwner()).get());
+        if(accountHolderRepository.findById(creditCardDTO.getSecondaryOwner()).isEmpty() ){
+
+        }else{
+            creditCard.setSecondaryOwner(accountHolderRepository.findById(creditCardDTO.getSecondaryOwner()).get());
+        }
         creditCard.setCreationDate(LocalDate.now());
         accountRepository.save(creditCard);
         return creditCardRepository.save(creditCard);

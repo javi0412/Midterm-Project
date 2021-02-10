@@ -18,14 +18,14 @@ import java.time.LocalDate;
 @DynamicUpdate
 public class Savings extends Account{
 
-    private BigDecimal interestRate = new BigDecimal("0.0025");
+    private BigDecimal interestRate = BigDecimal.valueOf(0.0025);
 
     protected String secretKey;
 
     @Enumerated(value = EnumType.STRING)
     protected Status status;
 
-    private BigDecimal minimumBalance;
+    private BigDecimal minimumBalance= BigDecimal.valueOf(1000);
 
     private LocalDate creationDate;  //!!!!
 

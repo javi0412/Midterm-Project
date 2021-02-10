@@ -57,7 +57,11 @@ public class CheckingService implements ICheckingService {
             studentChecking.setBalance(checkingDTO.getBalance());
             studentChecking.setSecretKey(checkingDTO.getSecretKey());
             studentChecking.setPrimaryOwner(accountHolderRepository.findById(checkingDTO.getPrimaryOwner()).get());
-            studentChecking.setSecondaryOwner(accountHolderRepository.findById(checkingDTO.getSecondaryOwner()).get());
+            if(accountHolderRepository.findById(checkingDTO.getSecondaryOwner()).isEmpty()){
+
+            } else{
+                studentChecking.setSecondaryOwner(accountHolderRepository.findById(checkingDTO.getSecondaryOwner()).get());
+            }
             studentChecking.setCreationDate(LocalDate.now());
             studentChecking.setStatus(Status.ACTIVE);
             accountRepository.save(studentChecking);
@@ -68,7 +72,11 @@ public class CheckingService implements ICheckingService {
             checking.setBalance(checkingDTO.getBalance());
             checking.setSecretKey(checkingDTO.getSecretKey());
             checking.setPrimaryOwner(accountHolderRepository.findById(checkingDTO.getPrimaryOwner()).get());
-            checking.setSecondaryOwner(accountHolderRepository.findById(checkingDTO.getSecondaryOwner()).get());
+            if(accountHolderRepository.findById(checkingDTO.getSecondaryOwner()).isEmpty()){
+
+            } else{
+                checking.setSecondaryOwner(accountHolderRepository.findById(checkingDTO.getSecondaryOwner()).get());
+            }
             checking.setCreationDate(LocalDate.now());
             checking.setStatus(Status.ACTIVE);
             accountRepository.save(checking);
