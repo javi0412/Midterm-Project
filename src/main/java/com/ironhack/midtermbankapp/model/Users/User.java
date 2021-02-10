@@ -12,10 +12,9 @@ public class User {
     @Column(name="id")
     private Long id;
 
-    @NotNull(message = "Name can not be null")
     private String name;
 
-    public User( @NotNull(message = "Name can not be null") String name) {
+    public User(String name) {
         this.name = name;
     }
 

@@ -15,7 +15,6 @@ import java.util.List;
 @DynamicUpdate
 public class AccountHolder extends User {
 
-    @NotNull
     private LocalDate dateOfBirth;
 
     @Embedded
@@ -34,8 +33,8 @@ public class AccountHolder extends User {
     public AccountHolder() {
     }
 
-    public AccountHolder(@NotNull(message = "Name can not be null") String name, String username,
-                         @NotNull LocalDate dateOfBirth, Address primaryAddress) {
+    public AccountHolder(String name, String username,
+                        LocalDate dateOfBirth, Address primaryAddress) {
         super(name);
         this.username=username;
         this.dateOfBirth = dateOfBirth;

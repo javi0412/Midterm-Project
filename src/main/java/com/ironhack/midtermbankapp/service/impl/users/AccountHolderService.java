@@ -33,7 +33,7 @@ public class AccountHolderService implements IAccountHolderService {
     }
 
     @Override
-    public AccountHolder create(@RequestBody @Valid AccountHolderDTO accountHolderDTO) {
+    public AccountHolder create(AccountHolderDTO accountHolderDTO) {
         AccountHolder accountHolder = new AccountHolder();
         accountHolder.setName(accountHolderDTO.getName());
         accountHolder.setPrimaryAddress(accountHolderDTO.getPrimaryAddress());
