@@ -35,6 +35,12 @@ public class AccountController implements IAccountController {
     }
 
     @Override
+    @GetMapping("/account/username/{username}")
+    public List<Account> getByUsername(@PathVariable String username) {
+        return accountService.getByUsername(username);
+    }
+
+    @Override
     @PatchMapping("/account/change-status/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateStatus(@PathVariable long id, @RequestBody @Valid StatusDTO statusDTO) {

@@ -26,17 +26,24 @@ public class AccountHolderDTO {
     @NotNull(message = "Username can not be null")
     private String username;
 
+    @NotNull(message = "Password can not be empty")
+    private String password;
+
 
     public AccountHolderDTO() {
     }
 
-    public AccountHolderDTO(@NotNull(message = "Name can not be null") String name, String username,
-                         @NotNull LocalDate dateOfBirth, Address primaryAddress) {
-        this.name=name;
-        this.username=username;
+    public AccountHolderDTO(@NotNull(message = "Name can not be null") String name,
+                            @NotNull(message = "Date of birth can not be null") LocalDate dateOfBirth,
+                            Address primaryAddress, @NotNull(message = "Username can not be null") String username,
+                            @NotNull(message = "Password can not be empty") String password) {
+        this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.primaryAddress = primaryAddress;
+        this.username = username;
+        this.password = password;
     }
+
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
@@ -62,12 +69,19 @@ public class AccountHolderDTO {
         this.username = username;
     }
 
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

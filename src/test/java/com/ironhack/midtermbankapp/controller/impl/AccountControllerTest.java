@@ -46,7 +46,7 @@ class AccountControllerTest {
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         Address address = new Address("Calle Radio", "Madrid", "Spain", "28012");
-        AccountHolder accountHolder = new AccountHolder("Javier Garcia", "javiicc",
+        AccountHolder accountHolder = new AccountHolder("Javier Garcia", "javiicc","123456",
                  LocalDate.of(1994, 11, 17),address );
         Checking checking = new Checking(new Money(BigDecimal.valueOf(250)), accountHolder, "375465");
 

@@ -88,5 +88,14 @@ public class Account {
     public BigDecimal getPenaltyFee() {
         return penaltyFee;
     }
+
+    public List<Transaction> getReceivedTransactions() {
+        return receivedTransactions;
+    }
+
+    public List<Transaction> getSentTransactions() {
+        return sentTransactions;
+    }
+
 }
 

@@ -39,6 +39,7 @@ public class AccountHolderService implements IAccountHolderService {
         accountHolder.setPrimaryAddress(accountHolderDTO.getPrimaryAddress());
         accountHolder.setDateOfBirth(accountHolderDTO.getDateOfBirth());
         accountHolder.setUsername(accountHolderDTO.getUsername());
+        accountHolder.setPassword(accountHolderDTO.getPassword());
         return accountHolderRepository.save(accountHolder);
     }
 }

@@ -20,7 +20,6 @@ public class AccountHolder extends User {
     @Embedded
     private Address primaryAddress;
 
-    private String username;
 
     @OneToMany(mappedBy = "primaryOwner", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonIgnore
@@ -33,10 +32,9 @@ public class AccountHolder extends User {
     public AccountHolder() {
     }
 
-    public AccountHolder(String name, String username,
+    public AccountHolder(String name, String username, String password,
                         LocalDate dateOfBirth, Address primaryAddress) {
-        super(name);
-        this.username=username;
+        super(name, username, password);
         this.dateOfBirth = dateOfBirth;
         this.primaryAddress = primaryAddress;
     }
@@ -55,14 +53,6 @@ public class AccountHolder extends User {
 
     public void setPrimaryAddress(Address primaryAddress) {
         this.primaryAddress = primaryAddress;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public List<Account> getPrimaryAccounts() {

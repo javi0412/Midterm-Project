@@ -11,6 +11,7 @@ public interface IAccountController {
 
     List<Account> getAll();
     Account getById(long id);
+    List<Account> getByUsername(String username);
     void updateStatus(long id, StatusDTO statusDTO);
     void updateBalance(long id, BalanceDTO balanceDTO);
 

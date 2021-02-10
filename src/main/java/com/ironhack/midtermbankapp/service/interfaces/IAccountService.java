@@ -14,6 +14,7 @@ public interface IAccountService {
 
     List<Account> getAll();
     Account getById(long id);
+    List<Account> getByUsername(String username);
     void updateStatus(long id, Status status);
     void updateBalance(long id, Money balance);
 

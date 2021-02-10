@@ -46,7 +46,7 @@ class SavingsControllerTest {
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         Address address = new Address("Calle Radio", "Madrid", "Spain", "28012");
-        AccountHolder accountHolder = new AccountHolder("Javier Garcia", "javiicc",
+        AccountHolder accountHolder = new AccountHolder("Javier Garcia", "javiicc","123456",
                 LocalDate.of(1994, 11, 17),address );
         Savings savings = new Savings(new Money(BigDecimal.valueOf(1000)), accountHolder,"123456a");
         savings.setInterestRate(BigDecimal.valueOf(0.2));
