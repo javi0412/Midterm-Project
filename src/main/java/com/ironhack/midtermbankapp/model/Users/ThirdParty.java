@@ -21,7 +21,7 @@ public class ThirdParty extends User{
 
     public ThirdParty() {
     }
-    
+
 
     public Integer getHashedKey() {
         return hashedKey;
