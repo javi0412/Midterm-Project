@@ -10,6 +10,7 @@ import java.time.LocalDate;
 public class CheckingDTO {
 
     private long primaryOwner;
+
     private long secondaryOwner;
 
     @NotNull(message = "Secret key required")
@@ -22,7 +23,7 @@ public class CheckingDTO {
 
     private BigDecimal minimumBalance = BigDecimal.valueOf(250);
 
-    private Money monthlyMaintenanceFee = new Money(new BigDecimal("12"));
+    private BigDecimal monthlyMaintenanceFee = (new BigDecimal("12"));
 
     public CheckingDTO() {
     }
@@ -83,11 +84,11 @@ public class CheckingDTO {
         this.minimumBalance = minimumBalance;
     }
 
-    public Money getMonthlyMaintenanceFee() {
+    public BigDecimal getMonthlyMaintenanceFee() {
         return monthlyMaintenanceFee;
     }
 
-    public void setMonthlyMaintenanceFee(Money monthlyMaintenanceFee) {
+    public void setMonthlyMaintenanceFee(BigDecimal monthlyMaintenanceFee) {
         this.monthlyMaintenanceFee = monthlyMaintenanceFee;
     }
 }

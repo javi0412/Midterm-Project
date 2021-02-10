@@ -18,18 +18,13 @@ public class Checking extends Account {
 
     private String secretKey;
 
-    @AttributeOverrides({
-            @AttributeOverride(name = "amount", column = @Column(name = "monthly_maintenance_fee_amount")),
-            @AttributeOverride(name = "currency", column = @Column(name = "monthly_maintenance_fee_currency"))
-    })
-    private Money monthlyMaintenanceFee = new Money(new BigDecimal("12"));
 
-    @AttributeOverrides({
-            @AttributeOverride(name = "amount", column = @Column(name = "minimum_balance_amount")),
-            @AttributeOverride(name = "currency", column = @Column(name = "minimum_balance_currency"))
-    })
-    private Money  minimumBalance = new Money(new BigDecimal("250"));
+    private BigDecimal monthlyMaintenanceFee = (new BigDecimal("12"));
 
+
+    private BigDecimal  minimumBalance = (new BigDecimal("250"));
+
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     private LocalDate creationDate;
@@ -59,11 +54,11 @@ public class Checking extends Account {
         this.secretKey = secretKey;
     }
 
-    public Money getMonthlyMaintenanceFee() {
+    public BigDecimal getMonthlyMaintenanceFee() {
         return monthlyMaintenanceFee;
     }
 
-    public Money getMinimumBalance() {
+    public BigDecimal getMinimumBalance() {
         return minimumBalance;
     }
 
@@ -79,4 +74,7 @@ public class Checking extends Account {
         return creationDate;
     }
 
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
+    }
 }

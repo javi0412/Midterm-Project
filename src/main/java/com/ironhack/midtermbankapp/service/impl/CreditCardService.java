@@ -2,6 +2,7 @@ package com.ironhack.midtermbankapp.service.impl;
 
 import com.ironhack.midtermbankapp.dto.CreditCardDTO;
 import com.ironhack.midtermbankapp.model.Accounts.CreditCard;
+import com.ironhack.midtermbankapp.repository.accounts.AccountRepository;
 import com.ironhack.midtermbankapp.repository.accounts.CreditCardRepository;
 import com.ironhack.midtermbankapp.repository.users.AccountHolderRepository;
 import com.ironhack.midtermbankapp.service.interfaces.ICreditCardService;
@@ -15,6 +16,9 @@ import java.util.List;
 
 @Service
 public class CreditCardService implements ICreditCardService {
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     @Autowired
     private CreditCardRepository creditCardRepository;
@@ -44,6 +48,7 @@ public class CreditCardService implements ICreditCardService {
         creditCard.setPrimaryOwner(accountHolderRepository.findById(creditCardDTO.getPrimaryOwner()).get());
         creditCard.setSecondaryOwner(accountHolderRepository.findById(creditCardDTO.getSecondaryOwner()).get());
         creditCard.setCreationDate(LocalDate.now());
+        accountRepository.save(creditCard);
         return creditCardRepository.save(creditCard);
     }
 }
