@@ -9,5 +9,5 @@ public interface ITransactionController {
 
     List<Transaction> getAll();
     Transaction getById(long id);
-//    Transaction create(TransactionDTO transactionDTO);
+    Transaction create(TransactionDTO transactionDTO);
 }

@@ -32,10 +32,10 @@ public class TransactionController implements ITransactionController {
         return transactionService.getById(id);
     }
 
-//    @Override
-//    @PostMapping("/transaction")
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public Transaction create(@RequestBody @Valid TransactionDTO transactionDTO) {
-//        return transactionService.create(transactionDTO);
-//    }
+    @Override
+    @PostMapping("/transaction")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Transaction create(@RequestBody @Valid TransactionDTO transactionDTO) {
+        return transactionService.create(transactionDTO);
+    }
 }
