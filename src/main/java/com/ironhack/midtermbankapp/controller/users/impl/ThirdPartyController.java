@@ -18,21 +18,21 @@ public class ThirdPartyController implements IThirdPartyController {
    private IThirdPartyService thirdPartyService;
 
     @Override
-    @GetMapping("/third-party")
+    @GetMapping("/admin/third-party")
     @ResponseStatus(HttpStatus.OK)
     public List<ThirdParty> getAll() {
         return thirdPartyService.getAll();
     }
 
     @Override
-    @GetMapping("/third-party/{id}")
+    @GetMapping("/admin/third-party/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ThirdParty getById(@PathVariable long id) {
         return thirdPartyService.getById(id);
     }
 
     @Override
-    @PostMapping("/third-party")
+    @PostMapping("/admin/third-party")
     @ResponseStatus(HttpStatus.CREATED)
     public ThirdParty create(@RequestBody @Valid ThirdPartyDTO thirdPartyDTO) {
         return thirdPartyService.create(thirdPartyDTO);

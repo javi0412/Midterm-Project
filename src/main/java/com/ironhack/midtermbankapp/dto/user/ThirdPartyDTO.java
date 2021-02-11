@@ -13,10 +13,17 @@ public class ThirdPartyDTO {
     public ThirdPartyDTO() {
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ThirdPartyDTO that = (ThirdPartyDTO) o;
+        return getName().equals(that.getName()) && getHashedKey().equals(that.getHashedKey());
+    }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(getName());
     }
 
     public String getName() {

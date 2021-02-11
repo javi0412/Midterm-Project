@@ -9,7 +9,7 @@ import java.util.Currency;
 
 @Embeddable
 public class Money {
-    private static final Currency USD = Currency.getInstance("USD");
+    private static final Currency EUR = Currency.getInstance("EUR");
     private static final RoundingMode DEFAULT_ROUNDING = RoundingMode.HALF_EVEN;
     private final Currency currency;
     @NotNull(message = "Amount can not be null")
@@ -33,14 +33,14 @@ public class Money {
     }
 
     public Money() {
-        this.currency=USD;
+        this.currency=EUR;
     }
 
     /**
      * Class constructor specifying amount. Uses default RoundingMode HALF_EVEN and default currency USD.
      **/
     public Money(BigDecimal amount) {
-        this(amount, USD, DEFAULT_ROUNDING);
+        this(amount, EUR, DEFAULT_ROUNDING);
     }
 
     public BigDecimal increaseAmount(Money money) {

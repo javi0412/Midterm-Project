@@ -17,21 +17,21 @@ public class CreditCardController implements ICreditCardController {
     private ICreditCardService creditCardService;
 
     @Override
-    @GetMapping("credit-card")
+    @GetMapping("/admin/credit-card")
     @ResponseStatus(HttpStatus.OK)
     public List<CreditCard> getAll() {
         return creditCardService.getAll();
     }
 
     @Override
-    @GetMapping("/credit-card/{id}")
+    @GetMapping("/admin/credit-card/{id}")
     @ResponseStatus(HttpStatus.OK)
     public CreditCard getById(@PathVariable long id) {
         return creditCardService.getById(id);
     }
 
     @Override
-    @PostMapping("/credit-card")
+    @PostMapping("/admin/credit-card")
     @ResponseStatus(HttpStatus.CREATED)
     public CreditCard create(@RequestBody @Valid CreditCardDTO creditCardDTO) {
         return creditCardService.create(creditCardDTO);

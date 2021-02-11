@@ -23,7 +23,7 @@ public class TransactionDTO {
             @AttributeOverride(name = "currency", column = @Column(name = "transaction_currency"))
     })
     private Money amount;
-    private Date transactionDate;
+    private Date transactionDate = new Date();
     private String nameOwnerDestinationAccount;
     private String userNameOriginAccount;
     private String passwordOriginAccount;

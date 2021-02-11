@@ -23,14 +23,14 @@ public class SavingsController implements ISavingsController {
     private SavingsRepository savingsRepository;
 
     @Override
-    @GetMapping("/savings")
+    @GetMapping("/admin/savings")
     @ResponseStatus(HttpStatus.OK)
     public List<Savings> getAll() {
         return savingsService.getAll();
     }
 
     @Override
-    @GetMapping("/savings/{id}")
+    @GetMapping("/admin/savings/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Savings getById(@PathVariable long id) {
         return savingsService.getById(id);
@@ -38,7 +38,7 @@ public class SavingsController implements ISavingsController {
 
 
     @Override
-    @PostMapping("/savings")
+    @PostMapping("/admin/savings")
     @ResponseStatus(HttpStatus.CREATED)
     public Savings create(@RequestBody @Valid SavingsDTO savingsDTO) {
         return savingsService.create(savingsDTO);

@@ -33,11 +33,18 @@ public class Account {
     @JoinColumn(name = "secondary_owner")
     private AccountHolder secondaryOwner;
 
-    private final BigDecimal penaltyFee = (new BigDecimal("40"));
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "amount", column = @Column(name = "penalty_fee_amount")),
+            @AttributeOverride(name = "currency", column = @Column(name = "penalty_fee_currency"))
+    })
+    private final Money penaltyFee = new Money(new BigDecimal("40"));
 
-    @OneToMany(mappedBy = "destinationAccount")
+    @OneToMany(mappedBy = "destinationAccount" )
+    @JsonIgnore
     private List<Transaction> receivedTransactions;
     @OneToMany(mappedBy = "origenAccount")
+    @JsonIgnore
     private List<Transaction> sentTransactions;
 
     public Account() {
@@ -85,7 +92,7 @@ public class Account {
         this.secondaryOwner = secondaryOwner;
     }
 
-    public BigDecimal getPenaltyFee() {
+    public Money getPenaltyFee() {
         return penaltyFee;
     }
 

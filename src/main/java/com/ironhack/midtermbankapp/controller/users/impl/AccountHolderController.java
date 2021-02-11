@@ -18,21 +18,21 @@ public class AccountHolderController implements IAccountHolderController {
     private IAccountHolderService accountHolderService;
 
     @Override
-    @GetMapping("/account-holder")
+    @GetMapping("/admin/account-holder")
     @ResponseStatus(HttpStatus.OK)
     public List<AccountHolder> getAll() {
         return accountHolderService.getAll();
     }
 
     @Override
-    @GetMapping("/account-holder/{id}")
+    @GetMapping("/admin/account-holder/{id}")
     @ResponseStatus(HttpStatus.OK)
     public AccountHolder getById(@PathVariable long id) {
         return accountHolderService.getById(id);
     }
 
     @Override
-    @PostMapping("/account-holder")
+    @PostMapping("/admin/account-holder")
     @ResponseStatus(HttpStatus.CREATED)
     public AccountHolder create(@RequestBody @Valid AccountHolderDTO accountHolderDTO) {
         return accountHolderService.create(accountHolderDTO);

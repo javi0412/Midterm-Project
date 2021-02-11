@@ -18,7 +18,7 @@ public class UserController implements IUserController {
     private IUserService userService;
 
     @Override
-    @GetMapping("/user")
+    @GetMapping("/admin/user")
     @ResponseStatus(HttpStatus.OK)
     public List<User> getAll() {
         return userService.getAll();

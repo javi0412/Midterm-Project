@@ -20,21 +20,21 @@ public class CheckingController implements ICheckingController {
 
 
     @Override
-    @GetMapping("/checking")
+    @GetMapping("/admin/checking")
     @ResponseStatus(HttpStatus.OK)
     public List<Checking> getAll() {
         return checkingService.getAll();
     }
 
     @Override
-    @GetMapping("/checking/{id}")
+    @GetMapping("/admin/checking/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Checking getById(@PathVariable long id) {
         return checkingService.getById(id);
     }
 
     @Override
-    @PostMapping("/checking")
+    @PostMapping("/admin/checking")
     @ResponseStatus(HttpStatus.CREATED)
     public Account create(@RequestBody @Valid CheckingDTO checkingDTO) {
         return checkingService.create(checkingDTO);

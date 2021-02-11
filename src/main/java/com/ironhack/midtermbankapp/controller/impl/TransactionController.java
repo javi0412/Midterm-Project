@@ -19,14 +19,14 @@ public class TransactionController implements ITransactionController {
 
 
     @Override
-    @GetMapping("/transaction")
+    @GetMapping("/admin/transaction")
     @ResponseStatus(HttpStatus.OK)
     public List<Transaction> getAll() {
         return transactionService.getAll();
     }
 
     @Override
-    @GetMapping("/transaction/{id}")
+    @GetMapping("/admin/transaction/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Transaction getById(@PathVariable long id) {
         return transactionService.getById(id);

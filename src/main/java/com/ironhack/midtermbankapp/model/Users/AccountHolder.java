@@ -8,6 +8,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,14 +21,13 @@ public class AccountHolder extends User {
     @Embedded
     private Address primaryAddress;
 
-
-    @OneToMany(mappedBy = "primaryOwner", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "primaryOwner")
     @JsonIgnore
-    private List<Account> primaryAccounts;
+    private List<Account> primaryAccounts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "secondaryOwner", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "secondaryOwner")
     @JsonIgnore
-    private List<Account> secondaryAccounts;
+    private List<Account> secondaryAccounts = new ArrayList<>();
 
     public AccountHolder() {
     }

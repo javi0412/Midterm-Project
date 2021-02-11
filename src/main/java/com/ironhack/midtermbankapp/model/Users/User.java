@@ -1,7 +1,11 @@
 package com.ironhack.midtermbankapp.model.Users;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -17,6 +21,10 @@ public class User {
     private String username;
 
     private String password;
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonIgnore
+    protected Set<Role> roles = new HashSet<>();
 
     public User(String name, String username, String password) {
         this.name = name;
@@ -58,5 +66,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }
