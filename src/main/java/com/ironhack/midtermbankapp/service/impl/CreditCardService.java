@@ -52,6 +52,7 @@ public class CreditCardService implements ICreditCardService {
             creditCard.setSecondaryOwner(accountHolderRepository.findById(creditCardDTO.getSecondaryOwner()).get());
         }
         creditCard.setCreationDate(LocalDate.now());
+        creditCard.setLastAccessDate(LocalDate.now());
         accountRepository.save(creditCard);
         return creditCardRepository.save(creditCard);
     }

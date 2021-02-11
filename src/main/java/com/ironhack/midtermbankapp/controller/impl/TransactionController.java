@@ -6,6 +6,8 @@ import com.ironhack.midtermbankapp.model.Transaction;
 import com.ironhack.midtermbankapp.service.interfaces.ITransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -35,7 +37,7 @@ public class TransactionController implements ITransactionController {
     @Override
     @PostMapping("/transaction")
     @ResponseStatus(HttpStatus.CREATED)
-    public Transaction create(@RequestBody @Valid TransactionDTO transactionDTO) {
-        return transactionService.create(transactionDTO);
+    public Transaction create(@RequestBody @Valid TransactionDTO transactionDTO,@AuthenticationPrincipal UserDetails userDetails) {
+        return transactionService.create(transactionDTO,userDetails);
     }
 }

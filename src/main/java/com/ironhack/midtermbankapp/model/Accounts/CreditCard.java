@@ -23,6 +23,8 @@ public class CreditCard extends Account{
 
     private LocalDate creationDate;
 
+    private LocalDate lastAccessDate;
+
     public CreditCard(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner,
                       BigDecimal creditLimit, BigDecimal interestRate) {
         super(balance, primaryOwner, secondaryOwner);
@@ -55,5 +57,13 @@ public class CreditCard extends Account{
 
     public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public LocalDate getLastAccessDate() {
+        return lastAccessDate;
+    }
+
+    public void setLastAccessDate(LocalDate lastAccessDate) {
+        this.lastAccessDate = lastAccessDate;
     }
 }

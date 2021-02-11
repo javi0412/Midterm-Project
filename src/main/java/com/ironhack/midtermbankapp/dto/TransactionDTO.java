@@ -25,8 +25,6 @@ public class TransactionDTO {
     private Money amount;
     private Date transactionDate = new Date();
     private String nameOwnerDestinationAccount;
-    private String userNameOriginAccount;
-    private String passwordOriginAccount;
 
 
     public TransactionDTO(){
@@ -34,16 +32,13 @@ public class TransactionDTO {
 
     public TransactionDTO(@NotNull long origenAccountId, @NotNull long destinationAccountId,
                           @NotNull String description, @NotNull Money amount,
-                          String nameOwnerDestinationAccount, String userNameOriginAccount,
-                          String passwordOriginAccount) {
+                          String nameOwnerDestinationAccount) {
         this.origenAccountId = origenAccountId;
         this.destinationAccountId = destinationAccountId;
         this.description = description;
         this.amount = amount;
         this.transactionDate = new Date();
         this.nameOwnerDestinationAccount = nameOwnerDestinationAccount;
-        this.userNameOriginAccount = userNameOriginAccount;
-        this.passwordOriginAccount = passwordOriginAccount;
     }
 
     public long getId() {
@@ -95,19 +90,4 @@ public class TransactionDTO {
         this.nameOwnerDestinationAccount = nameOwnerDestinationAccount;
     }
 
-    public String getUserNameOriginAccount() {
-        return userNameOriginAccount;
-    }
-
-    public void setUserNameOriginAccount(String userNameOriginAccount) {
-        this.userNameOriginAccount = userNameOriginAccount;
-    }
-
-    public String getPasswordOriginAccount() {
-        return passwordOriginAccount;
-    }
-
-    public void setPasswordOriginAccount(String passwordOriginAccount) {
-        this.passwordOriginAccount = passwordOriginAccount;
-    }
 }

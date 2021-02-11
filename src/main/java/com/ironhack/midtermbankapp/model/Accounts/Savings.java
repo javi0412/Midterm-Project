@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
@@ -28,6 +29,8 @@ public class Savings extends Account{
     private BigDecimal minimumBalance= BigDecimal.valueOf(1000);
 
     private LocalDate creationDate;
+
+    private Date lastInterestDate;
 
 
     public Savings(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner,
@@ -87,5 +90,13 @@ public class Savings extends Account{
 
     public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public Date getLastInterestDate() {
+        return lastInterestDate;
+    }
+
+    public void setLastInterestDate(Date lastInterestDate) {
+        this.lastInterestDate = lastInterestDate;
     }
 }

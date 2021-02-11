@@ -16,7 +16,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query(value = "SELECT MAX(total_sum) FROM  ( " +
             "SELECT    DATE(transaction_date) as DATE, SUM(transaction_amount) total_sum " +
             "FROM      transaction " +
-            "WHERE origen_account_id= ?1 " +
-            "GROUP BY  DATE(transaction_date)) AS my_table", nativeQuery = true)
+            "WHERE origen_account_id=?1 " +
+            "AND DATE(transaction_date) != DATE(NOW()) " +
+            "GROUP BY  DATE(transaction_date)) AS my_table;", nativeQuery = true)
     long findMaxTransactions24hPeriod(long originAccountId);
 }
