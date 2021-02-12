@@ -1,17 +1,24 @@
 package com.ironhack.midtermbankapp.controller.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ironhack.midtermbankapp.dto.BalanceDTO;
+import com.ironhack.midtermbankapp.dto.StatusDTO;
+import com.ironhack.midtermbankapp.dto.ThirdPartyTransactionDTO;
+import com.ironhack.midtermbankapp.dto.user.ThirdPartyDTO;
 import com.ironhack.midtermbankapp.model.Accounts.Account;
 import com.ironhack.midtermbankapp.model.Accounts.Checking;
+import com.ironhack.midtermbankapp.model.Accounts.Savings;
 import com.ironhack.midtermbankapp.model.Users.AccountHolder;
 import com.ironhack.midtermbankapp.model.Users.Admin;
 import com.ironhack.midtermbankapp.model.Users.Role;
+import com.ironhack.midtermbankapp.model.Users.ThirdParty;
+import com.ironhack.midtermbankapp.model.enums.Status;
+import com.ironhack.midtermbankapp.model.enums.TransactionType;
 import com.ironhack.midtermbankapp.repository.TransactionRepository;
 import com.ironhack.midtermbankapp.repository.accounts.AccountRepository;
-import com.ironhack.midtermbankapp.repository.users.AccountHolderRepository;
-import com.ironhack.midtermbankapp.repository.users.AdminRepository;
-import com.ironhack.midtermbankapp.repository.users.RoleRepository;
-import com.ironhack.midtermbankapp.repository.users.UserRepository;
+import com.ironhack.midtermbankapp.repository.accounts.SavingsRepository;
+import com.ironhack.midtermbankapp.repository.users.*;
 import com.ironhack.midtermbankapp.utils.Address;
 import com.ironhack.midtermbankapp.utils.Money;
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -34,8 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -60,7 +67,13 @@ class AccountControllerTest {
     private RoleRepository roleRepository;
 
     @Autowired
+    private SavingsRepository savingsRepository;
+
+    @Autowired
     private TransactionRepository transactionRepository;
+
+    @Autowired
+    private ThirdPartyRepository thirdPartyRepository;
 
     private MockMvc mockMvc;
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -72,7 +85,7 @@ class AccountControllerTest {
         accountHolder.setName("Javier");
         accountHolder.setDateOfBirth(LocalDate.of(1994 , 11, 17));
         accountHolder.setUsername("javigg");
-        accountHolder.setPassword("$2a$10$hr66If9xZyBdDWrSQeyLlORqrl7lSOaAOqKwb7ipcPoO/jlE7P6YO"); //123456
+        accountHolder.setPassword("$2a$10$hr66If9xZyBdDWrSQeyLlORqrl7lSOaAOqKwb7ipcPoO/jlE7P6YO"); //password: 123456
         accountHolder.setPrimaryAddress(new Address("Calle Radio", "Madrid", "España ...", "20019"));
         accountHolderRepository.save(accountHolder);
         AccountHolder accountHolder2 = new AccountHolder();
@@ -85,7 +98,7 @@ class AccountControllerTest {
         Admin admin = new Admin();
         admin.setName("Luis");
         admin.setUsername("admin1");
-        admin.setPassword("$2a$10$rZf8JHWZ1H0NXMKPFlNq1.Uj3WlOLmWygrTIov0dbKG7l4FAhVBey"); //0000
+        admin.setPassword("$2a$10$rZf8JHWZ1H0NXMKPFlNq1.Uj3WlOLmWygrTIov0dbKG7l4FAhVBey"); // password: 0000
         Role role = new Role();
         role.setName("ACCOUNTHOLDER");
         role.setUser(accountHolder);
@@ -107,14 +120,26 @@ class AccountControllerTest {
         account2.setBalance(new Money(new BigDecimal("6000")));
         account2.setPrimaryOwner(accountHolder);
         accountRepository.save(account2);
+        Savings savings = new Savings();
+        savings.setBalance(new Money(BigDecimal.valueOf(4000)));
+        savings.setPrimaryOwner(accountHolder2);
+        savings.setSecretKey("123456");
+        savingsRepository.save(savings);
+        ThirdParty thirdParty = new ThirdParty();
+        thirdParty.setName("Alimentacion Pepe");
+        thirdParty.setHashedKey(313131);
+        thirdPartyRepository.save(thirdParty);
     }
+
     @AfterEach
     void tearDown() {
+        thirdPartyRepository.deleteAll();
         transactionRepository.deleteAll();
         accountRepository.deleteAll();
         roleRepository.deleteAll();
         accountHolderRepository.deleteAll();
         userRepository.deleteAll();
+        savingsRepository.deleteAll();
     }
 
     @Test
@@ -128,24 +153,66 @@ class AccountControllerTest {
 
 
     }
+
     @Test
-    void findAccountsByAccountHolderId() throws Exception {
+    void getByUsername() throws Exception {
         MvcResult result = mockMvc.perform(get("/account").with(SecurityMockMvcRequestPostProcessors.
                 httpBasic("javigg", "123456"))).andReturn();
-        assertTrue(result.getResponse().getContentAsString().contains("5000"));
+        assertTrue(result.getResponse().getContentAsString().contains("6000"));
     }
-
-
 
     @Test
     void getById_validId_returnAccount() throws Exception {
         List<Account> accounts = accountRepository.findAll();
-        MvcResult result =mockMvc.perform(get("/account/" + accounts.get(0).getId())
+        MvcResult result =mockMvc.perform(get("/admin/account/" + accounts.get(0).getId())
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin1", "0000"))).andReturn();
         assertTrue(result.getResponse().getContentAsString().contains("Javier"));
         assertTrue(result.getResponse().getContentAsString().contains("javigg"));
         assertTrue(result.getResponse().getContentAsString().contains("Radio"));
     }
 
+    @Test
+    void updateBalance() throws Exception {
+        List<Account> accounts = accountRepository.findAll();
+        BalanceDTO balanceDTO = new BalanceDTO();
+        balanceDTO.setBalance(new Money(BigDecimal.valueOf(40000)));
+        String body = objectMapper.writeValueAsString(balanceDTO);
+        MvcResult result = mockMvc.perform(patch("/admin/account/balance/"+ accounts.get(0).getId())
+                .content(body).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin1", "0000")))
+                .andExpect(status().isNoContent())
+                .andReturn();
+    }
+
+    @Test
+    void updateStatus() throws Exception {
+        List<Account> accounts = accountRepository.findAll();
+        StatusDTO statusDTO = new StatusDTO();
+        statusDTO.setStatus(Status.FROZEN);
+        String body = objectMapper.writeValueAsString(statusDTO);
+        MvcResult result = mockMvc.perform(patch("/admin/account/change-status/"+ accounts.get(0).getId())
+                .content(body).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin1", "0000")))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+    }
+
+    @Test
+    void thirdPartyTransaction() throws Exception {
+        List<Savings> savings = savingsRepository.findAll();
+        List<ThirdParty> thirdParties = thirdPartyRepository.findAll();
+        ThirdPartyTransactionDTO thirdPartyTransactionDTO = new ThirdPartyTransactionDTO();
+        thirdPartyTransactionDTO.setAccountId(savings.get(0).getId());
+        thirdPartyTransactionDTO.setTransactionType(TransactionType.SEND);
+        thirdPartyTransactionDTO.setSecretKey("123456");
+        thirdPartyTransactionDTO.setAmount(BigDecimal.valueOf(22));
+        String body = objectMapper.writeValueAsString(thirdPartyTransactionDTO);
+        MvcResult result = mockMvc.perform(patch("/third-party-transaction?hashedKey=" + thirdParties.get(0).getHashedKey())
+                .content(body).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+    }
 
 }
