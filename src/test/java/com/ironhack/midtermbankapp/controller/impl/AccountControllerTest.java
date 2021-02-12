@@ -4,8 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ironhack.midtermbankapp.model.Accounts.Account;
 import com.ironhack.midtermbankapp.model.Accounts.Checking;
 import com.ironhack.midtermbankapp.model.Users.AccountHolder;
+import com.ironhack.midtermbankapp.model.Users.Admin;
+import com.ironhack.midtermbankapp.model.Users.Role;
+import com.ironhack.midtermbankapp.repository.TransactionRepository;
 import com.ironhack.midtermbankapp.repository.accounts.AccountRepository;
 import com.ironhack.midtermbankapp.repository.users.AccountHolderRepository;
+import com.ironhack.midtermbankapp.repository.users.AdminRepository;
+import com.ironhack.midtermbankapp.repository.users.RoleRepository;
 import com.ironhack.midtermbankapp.repository.users.UserRepository;
 import com.ironhack.midtermbankapp.utils.Address;
 import com.ironhack.midtermbankapp.utils.Money;
@@ -14,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -25,7 +31,12 @@ import java.util.Currency;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 class AccountControllerTest {
@@ -37,43 +48,102 @@ class AccountControllerTest {
     private AccountRepository accountRepository;
 
     @Autowired
+    private AccountHolderRepository accountHolderRepository;
+
+    @Autowired
+    private AdminRepository adminRepository;
+
+    @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     private MockMvc mockMvc;
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        Address address = new Address("Calle Radio", "Madrid", "Spain", "28012");
-        AccountHolder accountHolder = new AccountHolder("Javier Garcia", "javiicc","123456",
-                 LocalDate.of(1994, 11, 17),address );
-        Checking checking = new Checking(new Money(BigDecimal.valueOf(250)), accountHolder, "375465");
-
-        userRepository.save(accountHolder);
-        accountRepository.save(checking);
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(springSecurity()).build();
+        AccountHolder accountHolder = new AccountHolder();
+        accountHolder.setName("Javier");
+        accountHolder.setDateOfBirth(LocalDate.of(1994 , 11, 17));
+        accountHolder.setUsername("javigg");
+        accountHolder.setPassword("$2a$10$hr66If9xZyBdDWrSQeyLlORqrl7lSOaAOqKwb7ipcPoO/jlE7P6YO"); //123456
+        accountHolder.setPrimaryAddress(new Address("Calle Radio", "Madrid", "España ...", "20019"));
+        accountHolderRepository.save(accountHolder);
+        AccountHolder accountHolder2 = new AccountHolder();
+        accountHolder2.setName("Andres");
+        accountHolder2.setDateOfBirth(LocalDate.of(1985, 10, 28));
+        accountHolder2.setUsername("andres123");
+        accountHolder2.setPassword("$2a$10$hr66If9xZyBdDWrSQeyLlORqrl7lSOaAOqKwb7ipcPoO");
+        accountHolder2.setPrimaryAddress(new Address("Calle Ruido", "Estepona", "Spain", "56225"));
+        accountHolderRepository.save(accountHolder2);
+        Admin admin = new Admin();
+        admin.setName("Luis");
+        admin.setUsername("admin1");
+        admin.setPassword("$2a$10$rZf8JHWZ1H0NXMKPFlNq1.Uj3WlOLmWygrTIov0dbKG7l4FAhVBey"); //0000
+        Role role = new Role();
+        role.setName("ACCOUNTHOLDER");
+        role.setUser(accountHolder);
+        Role role2 = new Role();
+        role2.setName("ACCOUNTHOLDER");
+        role2.setUser(accountHolder);
+        Role role3 = new Role();
+        role3.setName("ADMIN");
+        role3.setUser(admin);
+        userRepository.saveAll(List.of(accountHolder, accountHolder2, admin));
+        roleRepository.save(role2);
+        roleRepository.save(role);
+        roleRepository.save(role3);
+        Account account = new Account();
+        account.setBalance(new Money(new BigDecimal("5000")));
+        account.setPrimaryOwner(accountHolder);
+        accountRepository.save(account);
+        Account account2 = new Account();
+        account2.setBalance(new Money(new BigDecimal("6000")));
+        account2.setPrimaryOwner(accountHolder);
+        accountRepository.save(account2);
     }
-
     @AfterEach
     void tearDown() {
+        transactionRepository.deleteAll();
         accountRepository.deleteAll();
+        roleRepository.deleteAll();
+        accountHolderRepository.deleteAll();
         userRepository.deleteAll();
     }
 
     @Test
     void getAll_NoParams_returnAll() throws Exception {
-        MvcResult result =mockMvc.perform(get("/account")).andReturn();
-        assertTrue(result.getResponse().getContentAsString().contains("375465"));
-        assertTrue(result.getResponse().getContentAsString().contains("Javier"));
-        assertTrue(result.getResponse().getContentAsString().contains("Radio"));
+        MvcResult result =mockMvc.perform(get("/admin/account")
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin1", "0000")))
+                .andReturn();
+        assertTrue(result.getResponse().getContentAsString().contains("5000"));
+        assertTrue(result.getResponse().getContentAsString().contains("6000"));
+        assertTrue(result.getResponse().getContentAsString().contains("5000"));
+
+
     }
+    @Test
+    void findAccountsByAccountHolderId() throws Exception {
+        MvcResult result = mockMvc.perform(get("/account").with(SecurityMockMvcRequestPostProcessors.
+                httpBasic("javigg", "123456"))).andReturn();
+        assertTrue(result.getResponse().getContentAsString().contains("5000"));
+    }
+
+
 
     @Test
     void getById_validId_returnAccount() throws Exception {
         List<Account> accounts = accountRepository.findAll();
-        MvcResult result =mockMvc.perform(get("/account/" + accounts.get(0).getId())).andReturn();
-        assertTrue(result.getResponse().getContentAsString().contains("375465"));
+        MvcResult result =mockMvc.perform(get("/account/" + accounts.get(0).getId())
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin1", "0000"))).andReturn();
         assertTrue(result.getResponse().getContentAsString().contains("Javier"));
+        assertTrue(result.getResponse().getContentAsString().contains("javigg"));
         assertTrue(result.getResponse().getContentAsString().contains("Radio"));
     }
 

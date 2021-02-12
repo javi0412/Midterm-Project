@@ -14,16 +14,16 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class AccountHolderDTO {
-    @NotNull(message = "Name can not be null")
+    @NotNull(message = "Name can not be empty")
     private String name;
 
-    @NotNull(message = "Date of birth can not be null")
+    @NotNull(message = "Date of birth can not be empty")
     private LocalDate dateOfBirth;
 
     @Embedded
     private Address primaryAddress ;
 
-    @NotNull(message = "Username can not be null")
+    @NotNull(message = "Username can not be empty")
     private String username;
 
     @NotNull(message = "Password can not be empty")
@@ -33,9 +33,9 @@ public class AccountHolderDTO {
     public AccountHolderDTO() {
     }
 
-    public AccountHolderDTO(@NotNull(message = "Name can not be null") String name,
-                            @NotNull(message = "Date of birth can not be null") LocalDate dateOfBirth,
-                            Address primaryAddress, @NotNull(message = "Username can not be null") String username,
+    public AccountHolderDTO(@NotNull(message = "Name can not be empty") String name,
+                            @NotNull(message = "Date of birth can not be empty") LocalDate dateOfBirth,
+                            Address primaryAddress, @NotNull(message = "Username can not be empty") String username,
                             @NotNull(message = "Password can not be empty") String password) {
         this.name = name;
         this.dateOfBirth = dateOfBirth;

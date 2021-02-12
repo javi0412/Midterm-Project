@@ -69,6 +69,9 @@ public class CheckingService implements ICheckingService {
 
         } else{
             Checking checking = new Checking();
+            if(checkingDTO.getBalance().getAmount().doubleValue() < checkingDTO.getMinimumBalance().doubleValue()){
+                throw new IllegalArgumentException("Balance amount can not be less than minimum balance amount");
+            }
             checking.setBalance(checkingDTO.getBalance());
             checking.setSecretKey(checkingDTO.getSecretKey());
             checking.setPrimaryOwner(accountHolderRepository.findById(checkingDTO.getPrimaryOwner()).get());

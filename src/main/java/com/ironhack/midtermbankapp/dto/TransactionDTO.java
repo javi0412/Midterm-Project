@@ -24,6 +24,7 @@ public class TransactionDTO {
     })
     private Money amount;
     private Date transactionDate = new Date();
+    @NotNull
     private String nameOwnerDestinationAccount;
 
 

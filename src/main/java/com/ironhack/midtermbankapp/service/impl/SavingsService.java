@@ -49,6 +49,9 @@ public class SavingsService implements ISavingsService {
         savings.setMinimumBalance(savingsDTO.getMinimumBalance());
         savings.setSecretKey(savingsDTO.getSecretKey());
         savings.setStatus(Status.ACTIVE);
+        if(savingsDTO.getBalance().getAmount().doubleValue() < savingsDTO.getMinimumBalance().doubleValue()){
+            throw new IllegalArgumentException("Balance amount can not be less than minimum balance amount");
+        }
         savings.setBalance(savingsDTO.getBalance());
         savings.setCreationDate(LocalDate.now());
         savings.setPrimaryOwner(accountHolderRepository.findById(savingsDTO.getPrimaryOwner()).get());

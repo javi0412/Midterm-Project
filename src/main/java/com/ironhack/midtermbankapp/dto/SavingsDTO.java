@@ -13,6 +13,7 @@ import java.time.LocalDate;
 
 public class SavingsDTO {
 
+    @NotNull
     private long primaryOwner;
     private long secondaryOwner;
 
@@ -29,6 +30,7 @@ public class SavingsDTO {
     private BigDecimal minimumBalance = BigDecimal.valueOf(1000);
     private LocalDate creationDate;  //!!!!
 
+    @NotNull
     private Money balance;
 
 //    public SavingsDTO(long primaryOwner, long secondaryOwner,Status status, LocalDate creationDate, @NotNull(message = "Secret key required") String secretKey, @DecimalMax(value = "0.5", message = "Maximum Interest rate must be 0.5") @Positive(message = "Interest rate must be positive") BigDecimal interestRate, @DecimalMin(value = "100", message = "Minimum balance must be above 100") @DecimalMax(value = "1000", message = "Minimum balance must be below 1000") BigDecimal minimumBalance, Money balance) {

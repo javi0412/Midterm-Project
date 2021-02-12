@@ -29,18 +29,19 @@ public class Checking extends Account {
 
     private LocalDate creationDate;
 
-    public Checking(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner,
-                    @NotNull(message = "Secret key can not be null") String secretKey) {
+    public Checking(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey) {
         super(balance, primaryOwner, secondaryOwner);
         this.secretKey = secretKey;
         this.status = Status.ACTIVE;
+        this.creationDate = LocalDate.now();
     }
 
-    public Checking(Money balance, AccountHolder primaryOwner,
-                    @NotNull(message = "Secret key can not be null") String secretKey) {
+    public Checking(Money balance, AccountHolder primaryOwner,String secretKey) {
         super(balance, primaryOwner);
         this.secretKey = secretKey;
         this.status = Status.ACTIVE;
+        this.creationDate = LocalDate.now();
+
     }
 
     public Checking() {

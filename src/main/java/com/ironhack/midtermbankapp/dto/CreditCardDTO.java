@@ -12,11 +12,12 @@ import java.time.LocalDate;
 
 public class CreditCardDTO {
 
+    @NotNull
     private long primaryOwner;
     private long secondaryOwner;
 
     private LocalDate creationDate;  //!!!!
-
+    @NotNull
     private Money balance;
 
     @DecimalMax(value = "100000")

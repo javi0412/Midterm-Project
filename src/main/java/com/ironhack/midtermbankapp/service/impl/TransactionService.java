@@ -26,6 +26,7 @@ import java.util.Optional;
 @Service
 public class TransactionService implements ITransactionService {
 
+    // Repositories dependencies injected
     @Autowired
     private TransactionRepository transactionRepository;
 
@@ -52,6 +53,7 @@ public class TransactionService implements ITransactionService {
     @Override
     public Transaction create (TransactionDTO transactionDTO, UserDetails userDetails) {
 
+        // Search the origin and destination accounts and check if they exist
         Optional<Account> originAccountOp = accountRepository.findById(transactionDTO.getOrigenAccountId());
         Optional<Account> destinationAccountOp = accountRepository.findById(transactionDTO.getDestinationAccountId());
 
@@ -59,33 +61,57 @@ public class TransactionService implements ITransactionService {
 
             Account originAccount = originAccountOp.get();
             Account destinationAccount = destinationAccountOp.get();
-//            if(originAccount instanceof Checking || originAccount instanceof StudentChecking ||
-//            originAccount instanceof Savings){
-//                if(((Checking) originAccount).getStatus().equals(Status.FROZEN) ||
-//                        ((StudentChecking) originAccount).getStatus().equals(Status.FROZEN) ||
-//                                ((Savings) originAccount).getStatus().equals(Status.FROZEN)){
-//                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Origin account is frozen");
-//                }
-//
-//            }
-//            if(destinationAccount instanceof Checking || destinationAccount instanceof StudentChecking ||
-//                    destinationAccount instanceof Savings){
-//                if(((Checking) destinationAccount).getStatus().equals(Status.FROZEN) ||
-//                        ((StudentChecking) destinationAccount).getStatus().equals(Status.FROZEN) ||
-//                        ((Savings) destinationAccount).getStatus().equals(Status.FROZEN)){
-//                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Origin account is frozen");
-//                }
-//
-//            }
+            // Before the transaction, we must check if any of the accounts are frozen
 
+            //Origin account
+            if(originAccount instanceof Checking ){
+                if(((Checking) originAccount).getStatus().equals(Status.FROZEN)){
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Origin account is frozen");
+                }
+            }
+            if(originAccount instanceof StudentChecking){
+                if(((StudentChecking) originAccount).getStatus().equals(Status.FROZEN)){
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Origin account is frozen");
+                }
+            }
+            if(originAccount instanceof Savings){
+                if(((Savings) originAccount).getStatus().equals(Status.FROZEN)){
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Origin account is frozen");
+                }
+            }
+
+            // Destination account
+            if(destinationAccount instanceof Checking){
+                if(((Checking) destinationAccount).getStatus().equals(Status.FROZEN)){
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Destination account is frozen");
+                }
+
+            }
+            if(destinationAccount instanceof StudentChecking ){
+                if(((StudentChecking) destinationAccount).getStatus().equals(Status.FROZEN)){
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Destination account is frozen");
+                }
+            }
+
+            if(destinationAccount instanceof Savings){
+                if(((Savings) destinationAccount).getStatus().equals(Status.FROZEN)){
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Destination account is frozen");
+                }
+            }
+
+            // Fraud checker, only works after 10 first transactions
             List<Transaction> transactions = originAccount.getSentTransactions();
             if (transactions.size() > 10) {
+                // Check seconds between last transaction
                 Transaction lastTransaction = transactions.get(transactions.size() - 1);
                 long secondsBetweenTransactions = (transactionDTO.getTransactionDate().getTime() -
                         lastTransaction.getTransactionDate().getTime()) / 1000;
 
+                // Verify if the sum of transactions of the last 24h (including this one) exceeds 150% of
+                // historical maximum in 24h.
                 long last24hTransactions = transactionRepository.findTransactionsLast24h(originAccount.getId());
                 long maxHistoric24hTransactions = transactionRepository.findMaxTransactions24hPeriod(originAccount.getId());
+                // If any of the conditions is achieved, origen account is frozen for security reason.
                 if (secondsBetweenTransactions <= 1 || last24hTransactions > 1.5 * maxHistoric24hTransactions) {
 
                     if (originAccount instanceof Checking) {
@@ -105,7 +131,7 @@ public class TransactionService implements ITransactionService {
                     }
                 }
             }
-
+            // Now proceed the transaction itself
                 Money amount = transactionDTO.getAmount();
                 String nameOwnerDestinationAccount = transactionDTO.getNameOwnerDestinationAccount();
 
@@ -114,15 +140,20 @@ public class TransactionService implements ITransactionService {
 
                 Money auxBalance = new Money(originAccount.getBalance().getAmount());
 
+                // Check if the username and password introduced in authentication matches with the account
                 Boolean userBool = userName.equals(userDetails.getUsername()) &&
                         password.equals(userDetails.getPassword());
+
+                //Check if the name of the destination account's owner matches with the introduced in the body
                 Boolean nameBool = destinationAccount.getPrimaryOwner().getName().equals(nameOwnerDestinationAccount) ||
                         destinationAccount.getSecondaryOwner().getName().equals(nameOwnerDestinationAccount);
 
+                // Check if there's enough money to perform the transaction
                 Boolean enoughBalance = auxBalance.decreaseAmount(amount).compareTo(new BigDecimal("0.0")) > -1;
 
                 if (userBool && nameBool && enoughBalance) {
 
+                    //Apply penalty fee depending on the account type if the balance is below minimumBalance
                     if (originAccount instanceof Savings) {
 
                         Savings saving = (Savings) originAccount;

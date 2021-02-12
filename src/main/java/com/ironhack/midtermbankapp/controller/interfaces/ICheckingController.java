@@ -12,6 +12,5 @@ public interface ICheckingController {
     List<Checking> getAll();
     Checking getById(long id);
     Account create(CheckingDTO checkingDTO);
-//    void updateStatus(StatusDTO statusDTO);
 
 }

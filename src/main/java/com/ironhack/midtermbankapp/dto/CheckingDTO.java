@@ -8,17 +8,19 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class CheckingDTO {
-
+    @NotNull
     private long primaryOwner;
 
     private long secondaryOwner;
 
     @NotNull(message = "Secret key required")
     protected String secretKey;
+
     protected Status status;
 
     private LocalDate creationDate;
 
+    @NotNull
     private Money balance;
 
     private BigDecimal minimumBalance = BigDecimal.valueOf(250);

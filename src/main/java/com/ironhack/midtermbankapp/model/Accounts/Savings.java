@@ -30,7 +30,7 @@ public class Savings extends Account{
 
     private LocalDate creationDate;
 
-    private Date lastInterestDate;
+    private LocalDate lastInterestDate;
 
 
     public Savings(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner,
@@ -92,11 +92,11 @@ public class Savings extends Account{
         this.creationDate = creationDate;
     }
 
-    public Date getLastInterestDate() {
+    public LocalDate getLastInterestDate() {
         return lastInterestDate;
     }
 
-    public void setLastInterestDate(Date lastInterestDate) {
+    public void setLastInterestDate(LocalDate lastInterestDate) {
         this.lastInterestDate = lastInterestDate;
     }
 }

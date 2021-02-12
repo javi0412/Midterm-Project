@@ -3,6 +3,7 @@ package com.ironhack.midtermbankapp.controller.impl;
 import com.ironhack.midtermbankapp.controller.interfaces.IAccountController;
 import com.ironhack.midtermbankapp.dto.BalanceDTO;
 import com.ironhack.midtermbankapp.dto.StatusDTO;
+import com.ironhack.midtermbankapp.dto.ThirdPartyTransactionDTO;
 import com.ironhack.midtermbankapp.model.Accounts.Account;
 import com.ironhack.midtermbankapp.service.interfaces.IAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ public class AccountController implements IAccountController {
 
     @Override
     @GetMapping("/account")
+    @ResponseStatus(HttpStatus.OK)
     public List<Account> getByUsername(@AuthenticationPrincipal UserDetails userDetails) {
         return accountService.getByUsername(userDetails.getUsername());
     }
@@ -53,6 +55,14 @@ public class AccountController implements IAccountController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateBalance(@PathVariable long id, @RequestBody @Valid BalanceDTO balanceDTO) {
         accountService.updateBalance(id, balanceDTO.getBalance());
+    }
+
+    @Override
+    @PatchMapping("/third-party-transaction")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void thirdPartyTransaction(@RequestParam Integer hashedKey,
+                                      @RequestBody @Valid ThirdPartyTransactionDTO thirdPartyTransactionDTO) {
+        accountService.thirdPartyTransaction(hashedKey, thirdPartyTransactionDTO);
     }
 
 

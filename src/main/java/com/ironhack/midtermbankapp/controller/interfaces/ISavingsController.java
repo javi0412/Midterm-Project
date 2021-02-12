@@ -11,6 +11,5 @@ public interface ISavingsController {
     List<Savings> getAll();
     Savings getById(long id);
     Savings create (SavingsDTO savingsDTO);
-//    void updateStatus(StatusDTO statusDTO);
 
 }

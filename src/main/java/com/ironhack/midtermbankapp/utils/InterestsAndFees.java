@@ -35,18 +35,22 @@ public class InterestsAndFees {
         }
     }
 
-//    public static void addInterestSavings(Long id, SavingsRepository savingsRepository) {
-//        Savings savings = savingsRepository.findById(id).get();
-//        Integer yearsSinceCreation = Period.between(LocalDate.now(), savings.getCreationDate()).getYears();
-//        Integer yearsSinceLastAccess = Period.between(LocalDate.now(), savings.getDateOfLastAccess()).getYears();
+    public static void addInterestSavings(Long id, SavingsRepository savingsRepository) {
+        Savings savings = savingsRepository.findById(id).get();
+
+        Integer yearsSinceCreation = Period.between(LocalDate.now(), savings.getCreationDate()).getYears();
+        Integer yearsSinceLastAccess = Period.between(LocalDate.now(), savings.getLastInterestDate()).getYears();
+//
 //        BigDecimal interestPerYear = savings.getInterestRate();
 //        Integer numberYears = yearsSinceCreation - yearsSinceLastAccess;
+//
 //        BigDecimal totalInterest = (interestPerYear.multiply(new BigDecimal(numberYears))).add(new BigDecimal(1));
+//
 //        if (yearsSinceCreation > yearsSinceLastAccess) {
 //            savings.setBalance(new Money(savings.getBalance().getAmount().multiply(totalInterest)));
-//            savings.setDateOfLastAccess(LocalDate.now());
+//            savings.setLastInterestDate(LocalDate.now());
 //            savingsRepository.save(savings);
 //        }
-//    }
+    }
 
 }

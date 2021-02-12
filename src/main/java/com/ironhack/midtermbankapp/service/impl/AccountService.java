@@ -1,11 +1,15 @@
 package com.ironhack.midtermbankapp.service.impl;
 
 import com.ironhack.midtermbankapp.dto.StatusDTO;
+import com.ironhack.midtermbankapp.dto.ThirdPartyTransactionDTO;
 import com.ironhack.midtermbankapp.model.Accounts.*;
 import com.ironhack.midtermbankapp.model.Users.AccountHolder;
+import com.ironhack.midtermbankapp.model.Users.ThirdParty;
 import com.ironhack.midtermbankapp.model.enums.Status;
+import com.ironhack.midtermbankapp.model.enums.TransactionType;
 import com.ironhack.midtermbankapp.repository.accounts.*;
 import com.ironhack.midtermbankapp.repository.users.AccountHolderRepository;
+import com.ironhack.midtermbankapp.repository.users.ThirdPartyRepository;
 import com.ironhack.midtermbankapp.service.interfaces.IAccountService;
 import com.ironhack.midtermbankapp.utils.InterestsAndFees;
 import com.ironhack.midtermbankapp.utils.Money;
@@ -37,6 +41,9 @@ public class AccountService implements IAccountService {
     @Autowired
     private CreditCardRepository creditCardRepository;
 
+    @Autowired
+    private ThirdPartyRepository thirdPartyRepository;
+
 
     @Autowired
     private AccountRepository accountRepository;
@@ -65,33 +72,16 @@ public class AccountService implements IAccountService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No accounts associated with that username found");
         }
         List<Account> accounts = accountsOp.get();
-        if(accounts.size() >1 ){
-            for (Account account : accounts){
-                if (account instanceof Savings){
-                    Savings savings = (Savings) account;
-                    Date dateNow = new Date();
-                    int years = 0;
-                    savings.getLastInterestDate().setYear(savings.getLastInterestDate().getYear()+1);
-                    Date lastDate = savings.getLastInterestDate();
-                    while(lastDate.before(dateNow)){
-                        years++;
-                        lastDate.setYear(lastDate.getYear()+1);
-                    }
-                    lastDate.setYear(lastDate.getYear()-1);
-                    savings.setLastInterestDate(lastDate);
-                    BigDecimal interest = new BigDecimal(savings.getInterestRate().doubleValue());
-                    interest = interest.add(new BigDecimal(1));
-                    interest = interest.pow(years);
-                    savings.setBalance(new Money(savings.getBalance().getAmount().multiply(interest)));
-                    savings.setLastInterestDate(lastDate);
-                    savingsRepository.save(savings);
+        if(accounts.size() >1 ) {
+            for (Account account : accounts) {
+                if (account instanceof Savings) {
+                    InterestsAndFees.addInterestSavings(account.getId(), savingsRepository);
                 }
-                if (account instanceof CreditCard){
+                if (account instanceof CreditCard) {
                     InterestsAndFees.addInterestCreditCard(account.getId(), creditCardRepository);
                 }
             }
         }
-
 
         return accounts;
     }
@@ -134,6 +124,65 @@ public class AccountService implements IAccountService {
         } else{
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found");
         }
+    }
+
+    @Override
+    public void thirdPartyTransaction(Integer hashedKey, ThirdPartyTransactionDTO thirdPartyTransactionDTO) {
+        Optional<ThirdParty> thirdPartyOp = thirdPartyRepository.findByHashedKey(hashedKey);
+        Optional<Account>    accountOp    = accountRepository.findById(thirdPartyTransactionDTO.getAccountId());
+
+        if(thirdPartyOp.isPresent() && accountOp.isPresent()){
+            ThirdParty thirdParty = thirdPartyOp.get();
+            Account account = accountOp.get();
+
+            if(account instanceof Checking){
+                if(((Checking) account).getSecretKey().equals(thirdPartyTransactionDTO.getSecretKey())){
+                    if(thirdPartyTransactionDTO.getTransactionType().equals(TransactionType.SEND)){
+                        account.setBalance(new Money(account.getBalance().increaseAmount(thirdPartyTransactionDTO.getAmount())));
+                    } else{
+                        account.setBalance(new Money(account.getBalance().decreaseAmount(thirdPartyTransactionDTO.getAmount())));
+                        if (account.getBalance().getAmount().doubleValue() < ((Checking) account).getMinimumBalance().doubleValue()) {
+                            account.setBalance(
+                                    new Money(account.getBalance().decreaseAmount(account.getPenaltyFee())));
+                        }
+                    }
+                }
+                else{
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Secret Key provided does not match with the account's one");
+                }
+            }
+            if(account instanceof StudentChecking){
+                if(((StudentChecking) account).getSecretKey().equals(thirdPartyTransactionDTO.getSecretKey())){
+                    if(thirdPartyTransactionDTO.getTransactionType().equals(TransactionType.SEND)){
+                        account.setBalance(new Money(account.getBalance().increaseAmount(thirdPartyTransactionDTO.getAmount())));
+                    } else{
+                        account.setBalance(new Money(account.getBalance().decreaseAmount(thirdPartyTransactionDTO.getAmount())));
+                    }
+                }
+                else{
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Secret Key provided does not match with the account's one");
+                }
+            }
+            if(account instanceof Savings){
+                if(((Savings) account).getSecretKey().equals(thirdPartyTransactionDTO.getSecretKey())){
+                    if(thirdPartyTransactionDTO.getTransactionType().equals(TransactionType.SEND)){
+                        account.setBalance(new Money(account.getBalance().increaseAmount(thirdPartyTransactionDTO.getAmount())));
+                    } else{
+                        account.setBalance(new Money(account.getBalance().decreaseAmount(thirdPartyTransactionDTO.getAmount())));
+                    }
+                }
+                else{
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Secret Key provided does not match with the account's one");
+                }
+            } else{
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Credit card accounts can not be updated by third parties");
+            }
+
+            accountRepository.save(account);
+        } else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account and/or third party not found");
+        }
+
     }
 
 }
