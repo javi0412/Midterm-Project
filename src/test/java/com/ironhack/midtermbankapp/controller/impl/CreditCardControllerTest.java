@@ -1,18 +1,16 @@
 package com.ironhack.midtermbankapp.controller.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ironhack.midtermbankapp.dto.SavingsDTO;
-import com.ironhack.midtermbankapp.model.Accounts.Account;
-import com.ironhack.midtermbankapp.model.Accounts.Checking;
+import com.ironhack.midtermbankapp.dto.CreditCardDTO;
+import com.ironhack.midtermbankapp.model.Accounts.CreditCard;
 import com.ironhack.midtermbankapp.model.Accounts.Savings;
 import com.ironhack.midtermbankapp.model.Users.AccountHolder;
 import com.ironhack.midtermbankapp.model.Users.Admin;
 import com.ironhack.midtermbankapp.model.Users.Role;
-import com.ironhack.midtermbankapp.model.Users.ThirdParty;
-import com.ironhack.midtermbankapp.model.enums.Status;
 import com.ironhack.midtermbankapp.repository.TransactionRepository;
 import com.ironhack.midtermbankapp.repository.accounts.AccountRepository;
-import com.ironhack.midtermbankapp.repository.accounts.SavingsRepository;
+import com.ironhack.midtermbankapp.repository.accounts.CreditCardRepository;
 import com.ironhack.midtermbankapp.repository.users.*;
 import com.ironhack.midtermbankapp.utils.Address;
 import com.ironhack.midtermbankapp.utils.Money;
@@ -39,7 +37,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-class SavingsControllerTest {
+class CreditCardControllerTest {
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -59,16 +58,15 @@ class SavingsControllerTest {
     private RoleRepository roleRepository;
 
     @Autowired
-    private SavingsRepository savingsRepository;
+    private CreditCardRepository creditCardRepository;
 
     @Autowired
     private TransactionRepository transactionRepository;
 
-    @Autowired
-    private ThirdPartyRepository thirdPartyRepository;
 
     private MockMvc mockMvc;
     private ObjectMapper objectMapper = new ObjectMapper();
+
 
     @BeforeEach
     void setUp() {
@@ -80,13 +78,6 @@ class SavingsControllerTest {
         accountHolder.setPassword("$2a$10$hr66If9xZyBdDWrSQeyLlORqrl7lSOaAOqKwb7ipcPoO/jlE7P6YO"); //password: 123456
         accountHolder.setPrimaryAddress(new Address("Calle Radio", "Madrid", "España", "20019"));
         accountHolderRepository.save(accountHolder);
-        AccountHolder accountHolder2 = new AccountHolder();
-        accountHolder2.setName("Andres");
-        accountHolder2.setDateOfBirth(LocalDate.of(1985, 10, 28));
-        accountHolder2.setUsername("andres123");
-        accountHolder2.setPassword("$2a$10$hr66If9xZyBdDWrSQeyLlORqrl7lSOaAOqKwb7ipcPoO");
-        accountHolder2.setPrimaryAddress(new Address("Calle Ruido", "Estepona", "Spain", "56225"));
-        accountHolderRepository.save(accountHolder2);
         Admin admin = new Admin();
         admin.setName("Luis");
         admin.setUsername("admin1");
@@ -94,54 +85,49 @@ class SavingsControllerTest {
         Role role = new Role();
         role.setName("ACCOUNTHOLDER");
         role.setUser(accountHolder);
-        Role role2 = new Role();
-        role2.setName("ACCOUNTHOLDER");
-        role2.setUser(accountHolder2);
         Role role3 = new Role();
         role3.setName("ADMIN");
         role3.setUser(admin);
-        userRepository.saveAll(List.of(accountHolder, accountHolder2, admin));
-        roleRepository.save(role2);
-        roleRepository.save(role);
-        roleRepository.save(role3);
-        Savings savings = new Savings();
-        savings.setBalance(new Money(BigDecimal.valueOf(4000)));
-        savings.setPrimaryOwner(accountHolder);
-        savings.setSecretKey("123456");
-        savingsRepository.save(savings);
+        userRepository.saveAll(List.of(accountHolder, admin));
+        roleRepository.saveAll(List.of(role, role3));
+        CreditCard creditCard = new CreditCard();
+        creditCard.setPrimaryOwner(accountHolder);
+        creditCard.setCreditLimit(BigDecimal.valueOf(500));
+        creditCard.setBalance(new Money(BigDecimal.valueOf(700)));
+        creditCard.setPrimaryOwner(accountHolder);
+        creditCardRepository.save(creditCard);
     }
 
     @AfterEach
     void tearDown() {
-        accountRepository.deleteAll();
+        creditCardRepository.deleteAll();
         roleRepository.deleteAll();
         accountHolderRepository.deleteAll();
         userRepository.deleteAll();
     }
 
     @Test
-    void getAll_NoParams_returnAll() throws Exception {
-        MvcResult result =mockMvc.perform(get("/admin/savings")
+    void getAll() throws Exception {
+        MvcResult result =mockMvc.perform(get("/admin/credit-card")
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin1", "0000")))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertTrue(result.getResponse().getContentAsString().contains("123456"));
+        assertTrue(result.getResponse().getContentAsString().contains("700"));
         assertTrue(result.getResponse().getContentAsString().contains("Javier"));
-        assertTrue(result.getResponse().getContentAsString().contains("4000"));
+        assertTrue(result.getResponse().getContentAsString().contains("500"));
     }
 
     @Test
-    void getById_validId_returnSavings() throws Exception {
-        List<Savings> savings = savingsRepository.findAll();
-        MvcResult result =mockMvc.perform(get("/admin/savings/" + savings.get(0).getId())
+    void getById() throws Exception {
+        List<CreditCard> creditCardList = creditCardRepository.findAll();
+        MvcResult result =mockMvc.perform(get("/admin/credit-card/" + creditCardList.get(0).getId())
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin1", "0000")))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertTrue(result.getResponse().getContentAsString().contains("123456"));
-        assertTrue(result.getResponse().getContentAsString().contains("Javier"));
-        assertTrue(result.getResponse().getContentAsString().contains("20019"));
+        assertTrue(result.getResponse().getContentAsString().contains("javigg"));
+        assertTrue(result.getResponse().getContentAsString().contains("700"));
+        assertTrue(result.getResponse().getContentAsString().contains("1994"));
     }
-
 
     @Test
     void create() throws Exception {
@@ -154,22 +140,17 @@ class SavingsControllerTest {
         accountHolder5.setPrimaryAddress(new Address("Calle Mercedes", "Madrid", "España", "28019"));
         accountHolderRepository.save(accountHolder5);
 
-        SavingsDTO savingsDTO = new SavingsDTO();
-        savingsDTO.setPrimaryOwner(accountHolder5.getId());
-//        savingsDTO.setMinimumBalance(BigDecimal.valueOf(800));
-//        savingsDTO.setInterestRate(BigDecimal.valueOf(0.4));
-        savingsDTO.setSecretKey("sdfasdf");
-//        savingsDTO.setStatus(Status.ACTIVE);
-        savingsDTO.setBalance(new Money(BigDecimal.valueOf(9000)));
+        CreditCardDTO creditCardDTO = new CreditCardDTO();
+        creditCardDTO.setBalance(new Money(BigDecimal.valueOf(4500)));
+        creditCardDTO.setPrimaryOwner(accountHolder5.getId());
 
-        String body = objectMapper.writeValueAsString(savingsDTO);
-
-        MvcResult result =mockMvc.perform(
-                post("/admin/savings")
-                .content(body).contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin1", "0000")))
+        String body = objectMapper.writeValueAsString(creditCardDTO);
+        MvcResult result = mockMvc.perform(
+                post("/admin/credit-card")
+                        .content(body)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin1", "0000")))
                 .andExpect(status().isCreated())
                 .andReturn();
-
-       }
+    }
 }

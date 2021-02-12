@@ -86,7 +86,7 @@ class AccountControllerTest {
         accountHolder.setDateOfBirth(LocalDate.of(1994 , 11, 17));
         accountHolder.setUsername("javigg");
         accountHolder.setPassword("$2a$10$hr66If9xZyBdDWrSQeyLlORqrl7lSOaAOqKwb7ipcPoO/jlE7P6YO"); //password: 123456
-        accountHolder.setPrimaryAddress(new Address("Calle Radio", "Madrid", "España ...", "20019"));
+        accountHolder.setPrimaryAddress(new Address("Calle Radio", "Madrid", "España", "20019"));
         accountHolderRepository.save(accountHolder);
         AccountHolder accountHolder2 = new AccountHolder();
         accountHolder2.setName("Andres");
@@ -139,13 +139,14 @@ class AccountControllerTest {
         roleRepository.deleteAll();
         accountHolderRepository.deleteAll();
         userRepository.deleteAll();
-        savingsRepository.deleteAll();
+
     }
 
     @Test
     void getAll_NoParams_returnAll() throws Exception {
         MvcResult result =mockMvc.perform(get("/admin/account")
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin1", "0000")))
+                .andExpect(status().isOk())
                 .andReturn();
         assertTrue(result.getResponse().getContentAsString().contains("5000"));
         assertTrue(result.getResponse().getContentAsString().contains("6000"));
@@ -157,7 +158,7 @@ class AccountControllerTest {
     @Test
     void getByUsername() throws Exception {
         MvcResult result = mockMvc.perform(get("/account").with(SecurityMockMvcRequestPostProcessors.
-                httpBasic("javigg", "123456"))).andReturn();
+                httpBasic("javigg", "123456"))).andExpect(status().isOk()).andReturn();
         assertTrue(result.getResponse().getContentAsString().contains("6000"));
     }
 
