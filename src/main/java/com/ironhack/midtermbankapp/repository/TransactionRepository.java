@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     @Query(value = "SELECT SUM(transaction_amount) FROM transaction WHERE (transaction_date >= now() - INTERVAL 1 DAY) AND origen_account_id = ?1", nativeQuery = true)
-    long findTransactionsLast24h(long originAccountId);
+    Long findTransactionsLast24h(long originAccountId);
 
     @Query(value = "SELECT MAX(total_sum) FROM  ( " +
             "SELECT    DATE(transaction_date) as DATE, SUM(transaction_amount) total_sum " +
@@ -19,5 +19,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "WHERE origen_account_id=?1 " +
             "AND DATE(transaction_date) != DATE(NOW()) " +
             "GROUP BY  DATE(transaction_date)) AS my_table;", nativeQuery = true)
-    long findMaxTransactions24hPeriod(long originAccountId);
+    Long findMaxTransactions24hPeriod(long originAccountId);
 }

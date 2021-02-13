@@ -101,7 +101,7 @@ public class TransactionService implements ITransactionService {
 
             // Fraud checker, only works after 10 first transactions
             List<Transaction> transactions = originAccount.getSentTransactions();
-            if (transactions.size() > 10) {
+            if (transactions.size() > 2) {
                 // Check seconds between last transaction
                 Transaction lastTransaction = transactions.get(transactions.size() - 1);
                 long secondsBetweenTransactions = (transactionDTO.getTransactionDate().getTime() -
@@ -120,7 +120,7 @@ public class TransactionService implements ITransactionService {
                     maxHistoric24hTransactions=Long.valueOf(transactions.size());
                 }
                 // If any of the conditions is achieved, origen account is frozen for security reason.
-                if (secondsBetweenTransactions <= 1 || last24hTransactions > 1.5 * maxHistoric24hTransactions) {
+                if (secondsBetweenTransactions <= 10 || last24hTransactions > 1.5 * maxHistoric24hTransactions) {
 
                     if (originAccount instanceof Checking) {
                         ((Checking) originAccount).setStatus(Status.FROZEN);
