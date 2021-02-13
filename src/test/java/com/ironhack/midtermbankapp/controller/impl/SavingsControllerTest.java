@@ -154,15 +154,15 @@ class SavingsControllerTest {
         accountHolder5.setPrimaryAddress(new Address("Calle Mercedes", "Madrid", "España", "28019"));
         accountHolderRepository.save(accountHolder5);
 
-        SavingsDTO savingsDTO = new SavingsDTO();
-        savingsDTO.setPrimaryOwner(accountHolder5.getId());
-//        savingsDTO.setMinimumBalance(BigDecimal.valueOf(800));
-//        savingsDTO.setInterestRate(BigDecimal.valueOf(0.4));
-        savingsDTO.setSecretKey("sdfasdf");
-//        savingsDTO.setStatus(Status.ACTIVE);
-        savingsDTO.setBalance(new Money(BigDecimal.valueOf(9000)));
-
-        String body = objectMapper.writeValueAsString(savingsDTO);
+        String body = "{\n" +
+                "    \"balance\": {\n" +
+                "        \"currency\": \"EUR\",\n" +
+                "        \"amount\": 2000.00\n" +
+                "    },\n" +
+                "    \"primaryOwner\":" +accountHolder5.getId()+ ",\n" +
+                "    \"secretKey\": \"12ddd4\"\n" +
+                "\n" +
+                "}";
 
         MvcResult result =mockMvc.perform(
                 post("/admin/savings")
@@ -170,6 +170,5 @@ class SavingsControllerTest {
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin1", "0000")))
                 .andExpect(status().isCreated())
                 .andReturn();
-
        }
 }

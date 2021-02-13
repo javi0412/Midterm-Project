@@ -23,7 +23,7 @@ public class ThirdPartyDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName());
+        return Objects.hash();
     }
 
     public String getName() {
