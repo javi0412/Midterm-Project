@@ -48,6 +48,26 @@ Body:
     } 
     Using the password util to introduced the password encrpyted ('123456' in this case)
 ```
+We should create another account holder to have a few accounts to perform transactions
+``` 
+POST ROUTE: http://localhost:8080/admin/account-holder
+Basic Auth: Username: 'username1' ; password: '1234'
+
+Body:
+ {
+        "name": "Marina Garcia",
+        "dateOfBirth": "1991-11-17",
+        "primaryAddress": {
+            "street": "Calle Ordoñez",
+            "city": "Sevilla",
+            "country": "Spain",
+            "zipCode": "46658"
+        },
+        "username": "marina123", 
+        "password": "$2a$10$WAtEJMNnpMR3F8rf2.wxsO2P9rVxShyZOLvkgm1whZLzc4YMrfHWy"
+    } 
+    Using the password util to introduced the password encrpyted ('123456' in this case)
+```
 
 **GET ALL ACCOUNT HOLDERS**
 
@@ -84,6 +104,21 @@ Body:
     
 There is no need to set up minimum balance, monthly maintenance fee.
 Secondary owner is optional.
+```
+We create another checking account to other account holder
+``` 
+POST ROUTE: http://localhost:8080/admin/checking
+Basic Auth: Username: 'username1' ; password: '1234'
+Body:
+    {
+        "balance": {
+            "currency": "EUR",
+            "amount": 8000.00
+        },
+        "primaryOwner": 3,
+        "secretKey": "1300r"
+    }
+    
 ```
 
 **GET ALL CHECKINGS**
@@ -251,8 +286,41 @@ Body:none
 Account holders can only access their accounts and make transactions.
 
 **ACCESS ACCOUNTS**
+To access their accounts, account holders must use Basic Authorization with their credentials.
+Also the fees and interests are checked when accessed.
 ```
 GET ROUTE: http://localhost:8080/account
 Basic Auth: Username: 'javi94' ; password: '123456'
 Body:none
+```
+
+**CREATE TRANSACTION**
+Account holders must use Basic Authorization with their credentials to send money from their accounts.
+```
+POST ROUTE: http://localhost:8080/transaction
+Basic Auth: Username: 'javi94' ; password: '123456'
+Body:
+{
+        "origenAccountId": 1,
+        "destinationAccountId": 2,
+        "description": "Reembolso",
+        "amount": {
+            "currency": "EUR",
+            "amount": 50.00
+        }, 
+        "nameOwnerDestinationAccount":"Marina Garcia" 
+}
+```
+
+## THIRD PARTY ROUTES
+```
+POST ROUTE: http://localhost:8080/third-party-transaction?hashedKey={hashedKey}  (HashedKey is provided in the creation of the third party)
+No Auth needed
+Body:
+{
+    "amount": 50.0, 
+    "accountId": 2,
+    "secretKey": "sdfse", 
+    "transactionType": "SEND"
+}
 ```
