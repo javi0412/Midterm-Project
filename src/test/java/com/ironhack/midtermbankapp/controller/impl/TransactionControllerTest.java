@@ -187,7 +187,7 @@ class TransactionControllerTest {
     }
 
     @Test
-    void create_fraudChecker() throws Exception {
+    void create_fraudChecker_1sec() throws Exception {
         List<Savings> savingss = savingsRepository.findAll();
         Savings originAccount = savingss.get(0);
         Savings destinationAccount = savingss.get(1);
@@ -218,7 +218,6 @@ class TransactionControllerTest {
         transactionDTO2.setAmount(new Money(BigDecimal.valueOf(500)));
         transactionDTO2.setDescription("Blablabla");
         transactionDTO2.setNameOwnerDestinationAccount(destinationAccount.getPrimaryOwner().getName());
-        transactionDTO2.setTransactionDate(new Date(transactionDTO.getTransactionDate().getTime()+500));
 
         String body2 = objectMapper.writeValueAsString(transactionDTO2);
 
@@ -246,5 +245,69 @@ class TransactionControllerTest {
                         .with(SecurityMockMvcRequestPostProcessors.httpBasic("javigg", "123456")))
                 .andExpect(status().isForbidden())
                 .andReturn();
+//        assertTrue(result3.getResponse().getContentAsString().toLowerCase().contains("frozen"));
     }
+
+    @Test
+    void create_fraudChecker_max24h() throws Exception {
+        List<Savings> savingss = savingsRepository.findAll();
+        Savings originAccount = savingss.get(0);
+        Savings destinationAccount = savingss.get(1);
+
+        TransactionDTO transactionDTO = new TransactionDTO();
+
+        transactionDTO.setOrigenAccountId(originAccount.getId());
+        transactionDTO.setDestinationAccountId(destinationAccount.getId());
+        transactionDTO.setAmount(new Money(BigDecimal.valueOf(30)));
+        transactionDTO.setDescription("Blablabla");
+        transactionDTO.setNameOwnerDestinationAccount(destinationAccount.getPrimaryOwner().getName());
+        transactionDTO.setTransactionDate(new Date(2020, 11, 17, 16, 50));
+
+        String body = objectMapper.writeValueAsString(transactionDTO);
+
+        MvcResult result =mockMvc.perform(
+                post("/transaction")
+                        .content(body).contentType(MediaType.APPLICATION_JSON)
+                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("javigg", "123456")))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+
+        TransactionDTO transactionDTO2 = new TransactionDTO();
+
+        transactionDTO2.setOrigenAccountId(originAccount.getId());
+        transactionDTO2.setDestinationAccountId(destinationAccount.getId());
+        transactionDTO2.setAmount(new Money(BigDecimal.valueOf(30)));
+        transactionDTO2.setDescription("Blablabla");
+        transactionDTO2.setNameOwnerDestinationAccount(destinationAccount.getPrimaryOwner().getName());
+        transactionDTO2.setTransactionDate(new Date(2020, 11, 17, 16, 52));
+
+        String body2 = objectMapper.writeValueAsString(transactionDTO2);
+
+        MvcResult result2 =mockMvc.perform(
+                post("/transaction")
+                        .content(body2).contentType(MediaType.APPLICATION_JSON)
+                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("javigg", "123456")))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        TransactionDTO transactionDTO3 = new TransactionDTO();
+
+        transactionDTO3.setOrigenAccountId(originAccount.getId());
+        transactionDTO3.setDestinationAccountId(destinationAccount.getId());
+        transactionDTO3.setAmount(new Money(BigDecimal.valueOf(500)));
+        transactionDTO3.setDescription("Blablabla");
+        transactionDTO3.setNameOwnerDestinationAccount(destinationAccount.getPrimaryOwner().getName());
+//        transactionDTO2.setTransactionDate(new Date(2020, 11, 21, 16, 55));
+
+        String body3 = objectMapper.writeValueAsString(transactionDTO3);
+
+        MvcResult result3 =mockMvc.perform(
+                post("/transaction")
+                        .content(body3).contentType(MediaType.APPLICATION_JSON)
+                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("javigg", "123456")))
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
 }

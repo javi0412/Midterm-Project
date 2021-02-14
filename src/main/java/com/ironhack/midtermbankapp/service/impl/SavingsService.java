@@ -54,6 +54,7 @@ public class SavingsService implements ISavingsService {
         }
         savings.setBalance(savingsDTO.getBalance());
         savings.setCreationDate(LocalDate.now());
+        savings.setLastInterestDate(LocalDate.now());
         savings.setPrimaryOwner(accountHolderRepository.findById(savingsDTO.getPrimaryOwner()).get());
         if(accountHolderRepository.findById(savingsDTO.getSecondaryOwner()).isEmpty()){
 

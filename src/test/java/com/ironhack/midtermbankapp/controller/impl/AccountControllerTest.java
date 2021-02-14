@@ -151,8 +151,6 @@ class AccountControllerTest {
         assertTrue(result.getResponse().getContentAsString().contains("5000"));
         assertTrue(result.getResponse().getContentAsString().contains("6000"));
         assertTrue(result.getResponse().getContentAsString().contains("5000"));
-
-
     }
 
     @Test

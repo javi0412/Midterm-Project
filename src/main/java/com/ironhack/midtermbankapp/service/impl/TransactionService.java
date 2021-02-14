@@ -112,31 +112,27 @@ public class TransactionService implements ITransactionService {
                 Long last24hTransactions = transactionRepository.findTransactionsLast24h(originAccount.getId());
                 Long maxHistoric24hTransactions = transactionRepository.findMaxTransactions24hPeriod(originAccount.getId());
 
-                if (last24hTransactions==null){
-                    last24hTransactions=0L;
 
-                }
-                if (maxHistoric24hTransactions==null){
-                    maxHistoric24hTransactions=Long.valueOf(transactions.size());
-                }
                 // If any of the conditions is achieved, origen account is frozen for security reason.
-                if (secondsBetweenTransactions <= 10 || last24hTransactions > 1.5 * maxHistoric24hTransactions) {
 
-                    if (originAccount instanceof Checking) {
-                        ((Checking) originAccount).setStatus(Status.FROZEN);
-                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Fraud detection activated, " +
-                                "origin account frozen for security reasons ");
-                    }
-                    if (originAccount instanceof StudentChecking) {
-                        ((StudentChecking) originAccount).setStatus(Status.FROZEN);
-                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Fraud detection activated, " +
-                                "origin account frozen for security reasons ");
-                    }
-                    if (originAccount instanceof Savings) {
-                        ((Savings) originAccount).setStatus(Status.FROZEN);
-                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Fraud detection activated, " +
-                                "origin account frozen for security reasons ");
-                    }
+
+                    if (secondsBetweenTransactions < 1 || (last24hTransactions > 1.5 * maxHistoric24hTransactions)) {
+
+                        if (originAccount instanceof Checking) {
+                            ((Checking) originAccount).setStatus(Status.FROZEN);
+                            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Fraud detection activated, " +
+                                    "origin account frozen for security reasons ");
+                        }
+                        if (originAccount instanceof StudentChecking) {
+                            ((StudentChecking) originAccount).setStatus(Status.FROZEN);
+                            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Fraud detection activated, " +
+                                    "origin account frozen for security reasons ");
+                        }
+                        if (originAccount instanceof Savings) {
+                            ((Savings) originAccount).setStatus(Status.FROZEN);
+                            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Fraud detection activated, " +
+                                    "origin account frozen for security reasons ");
+                        }
                 }
             }
             // Now proceed the transaction itself
@@ -196,17 +192,17 @@ public class TransactionService implements ITransactionService {
                     return transactionRepository.save(transaction);
 
                 } else if (!userBool) {
-                    throw new IllegalArgumentException("Incorrect username and/or password");
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Username and/or password do not match");
 
                 } else if (!nameBool) {
-                    throw new IllegalArgumentException("The given name does not match any account");
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Given name does not match any account");
 
                 } else {
                     throw new IllegalArgumentException("There is not enough money to complete transaction");
 
                 }
         } else{
-            throw new IllegalArgumentException("The given account id does not match any listed account");
+            throw new ResponseStatusException (HttpStatus.NOT_FOUND, "The given account id does not match any listed account");
         }
     }
 }

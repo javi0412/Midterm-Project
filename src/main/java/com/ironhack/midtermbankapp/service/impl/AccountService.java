@@ -71,8 +71,10 @@ public class AccountService implements IAccountService {
         if(!accountsOp.isPresent()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No accounts associated with that username found");
         }
+
         List<Account> accounts = accountsOp.get();
-        if(accounts.size() >1 ) {
+
+        if(accounts.size() >= 1 ) {
             for (Account account : accounts) {
                 if (account instanceof Savings) {
                     InterestsAndFees.addInterestSavings(account.getId(), savingsRepository);

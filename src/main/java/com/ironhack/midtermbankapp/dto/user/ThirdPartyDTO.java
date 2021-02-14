@@ -8,22 +8,9 @@ public class ThirdPartyDTO {
     @NotNull(message = "Name can not be null")
     private String name;
 
-    private final Integer hashedKey = hashCode();
+    private final Integer hashedKey = (int) Math.floor(Math.random()*(999999-100000+1)+100000);;
 
     public ThirdPartyDTO() {
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ThirdPartyDTO that = (ThirdPartyDTO) o;
-        return getName().equals(that.getName()) && getHashedKey().equals(that.getHashedKey());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash();
     }
 
     public String getName() {
