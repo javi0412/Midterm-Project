@@ -118,5 +118,11 @@ CREATE TABLE `transaction` (
 
 SELECT * FROM user;
 
-INSERT INTO user( name, password, username) VALUES
-('Luis','$2a$10$FKWDfJipctc6nQ2GUsejRe9K9W0.DpRG6nsMHIBdxDmQqhGH29ciW', 'admin'); -- passowrd:1234
+INSERT INTO user(id,name, password, username) VALUES
+('1','Luis','$2a$10$FKWDfJipctc6nQ2GUsejRe9K9W0.DpRG6nsMHIBdxDmQqhGH29ciW', 'username1'); -- passowrd:1234
+
+SELECT * FROM roles;
+INSERT INTO roles(id, name, user_id) VALUES
+('1','ADMIN', '1');
+
+
