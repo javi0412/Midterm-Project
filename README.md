@@ -1,6 +1,6 @@
 # Midterm-Project
 
-Welcome to BankAPP, the....
+Welcome to BankAPP, the banking application that has come to transform digital banking.
 
 There are 4 types of accounts:
 
