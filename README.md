@@ -16,7 +16,7 @@ their accounts when passing the correct credentials using Basic Auth.
 * **Third Parties**: third parties have a hashed key and name. They are added to the database by an admin and they can receive and send money to other accounts.
 
 The operation of the program is detailed below in a logical order. There is a bankapp.sql file in resources folder, which contains all the necessary data to create
-the schema and tables and to follow this guide.
+the schema and tables and to follow this guide (or can also be created with create command in application.properties file).
 
 Firstly, the project shall be assembled and admins must be added to the database manually (password encrpyted using BCrypt).
 ```
