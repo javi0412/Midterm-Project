@@ -295,6 +295,7 @@ Body:none
 ```
 
 **CREATE TRANSACTION**
+
 Account holders must use Basic Authorization with their credentials to send money from their accounts.
 ```
 POST ROUTE: http://localhost:8080/transaction
